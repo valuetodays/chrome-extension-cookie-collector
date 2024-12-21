@@ -4,13 +4,6 @@
 
 This extension will send your local cookie to SPECIFIED SERVER that can be used in any other applications.
 
-## change SERVER
-
-change the following:
-
-- `http://YOUR_API_ADDRESS` in background.js
-- `http://YOUR_API_ADDRESS` in popup.js
-
 ## install
 
 open chrome.
@@ -21,8 +14,13 @@ choose directory where manifest.json locates.
 
 ## usage
 
-click extension icon or Ctrl+shift+F
+- config your server in options page
+  - [ ] add some excludes site
+- [x] click extension icon or Ctrl+shift+F
+- [x] auto push cookie when url changes
 
 ## remark
 
-Maybe 'background.js' is no use.
+### How does popup.js call method in service_worker.js
+
+Use `message`, see `queyrCookieAndPushToServer` in popup.js and `chrome.runtime.onMessage.addListener` in service_worker.js.

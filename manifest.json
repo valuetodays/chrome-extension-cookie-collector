@@ -3,6 +3,7 @@
   "name": "cookie-collector",
   "description": "collect cookie in specify website",
   "version": "1.0.0",
+  "homepage_url": "https://github.com/valuetodays/chrome-extension-cookie-collector",
   "action": {
     "default_popup": "hello.html",
     "default_icon": "hello_extensions.png"
@@ -11,13 +12,21 @@
     "<all_urls>"
   ],
   "permissions": [
-    "cookies", "activeTab", "tabs", "webRequest"
+    "cookies",
+    "activeTab",
+    "tabs",
+    "webRequest",
+    "storage",
+    "background"
   ],
   "background": {
-    "service_worker": "background.js",
-    "type": "module"
+    "service_worker": "service_worker.js"
   },
-  "commands":{
+  "options_ui": {
+    "page": "./options.html",
+    "open_in_tab": true
+  },
+  "commands": {
     "_execute_action": {
       "suggested_key": {
         "windows": "Ctrl+Shift+F",

