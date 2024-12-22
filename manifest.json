@@ -21,6 +21,7 @@
   ],
   "background": {
     "service_worker": "service_worker.js"
+    // ,"type": "module"
   },
   "options_ui": {
     "page": "./options.html",

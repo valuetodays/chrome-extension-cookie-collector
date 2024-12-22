@@ -13,14 +13,17 @@ const OptionsPage = {
       alert("url should not be empty");
       return false;
     }
-    saveOptions({ url: urlSendTo });
+    let urlGetRsaPublicKey = document.getElementById("url-get-rsa-public-key").value;
+    
+    saveOptions({ url: urlSendTo, publickeyUrl: urlGetRsaPublicKey });
   },
 
   async showOptions() {
-    const savedOptions = await chrome.storage.local.get(['url']);
+    const savedOptions = await chrome.storage.local.get(['url', 'publickeyUrl']);
     console.log({savedOptions})
 
     document.getElementById('url-send-to').value = savedOptions?.url||''
+    document.getElementById('url-get-rsa-public-key').value = savedOptions?.publickeyUrl||''
   },
 };
 

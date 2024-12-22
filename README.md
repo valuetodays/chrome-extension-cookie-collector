@@ -2,7 +2,7 @@
 
 ## description
 
-This extension will send your local cookie to SPECIFIED SERVER that can be used in any other applications.
+This extension will send your encrypted 'local cookie' to SPECIFIED SERVER that can be used in any other applications.
 
 ## install
 

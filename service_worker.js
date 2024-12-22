@@ -1,3 +1,6 @@
+importScripts('./jsencrypt_utils.js')
+
+
 async function start() {
   const current = await chrome.windows.getCurrent();
   console.log("current", current);
@@ -54,15 +57,20 @@ async function pushCookieToServer(domain, type, referer) {
   if (cookies.length === 0) {
     console.log("No cookies found");
   } else {
-    const __json = {
-      cookieArrText: JSON.stringify(cookies),
+    let __json = {
       domain: domain,
       type: type,
       referer: referer,
     };
-    const __json_str = JSON.stringify(__json);
-
-    const savedOptions = await chrome.storage.local.get(["url"]);
+    const cookieArrText = JSON.stringify(cookies)
+    const savedOptions = await chrome.storage.local.get(["url", 'publickeyUrl']);
+    let __publickeyUrl = savedOptions.publickeyUrl;
+    if (__publickeyUrl) {
+      const respData = await fetchPublicKey(__publickeyUrl)
+      const key = respData.data;
+      const encryptTextArr = encryptPartitons(key, cookieArrText, 128)
+      __json['cookieTextArr'] = encryptTextArr
+    }
     let __url = savedOptions.url;
     if (!__url) {
       alert("please config url in options page.");
@@ -70,7 +78,7 @@ async function pushCookieToServer(domain, type, referer) {
     }
     const __option = {
       method: "POST",
-      body: __json_str,
+      body: JSON.stringify(__json),
       headers: {
         "Content-type": "application/json;charset=utf-8",
       },
@@ -85,4 +93,38 @@ async function pushCookieToServer(domain, type, referer) {
       .then((json) => console.log("resp.json", json))
       .catch((err) => console.log("Request Failed", err));
   }
+}
+
+function encryptPartitons(key, long_text, chunkLength) {
+  var arr = []
+  for (let i = 0; i < long_text.length; i += chunkLength) {
+    const sub_text = long_text.slice(i, i + chunkLength)
+    arr.push(encrypt(key, sub_text))
+  }
+  return arr;
+}
+
+function splitByLength(str, chunkLength) {
+  const result = [];
+  for (let i = 0; i < str.length; i += chunkLength) {
+    result.push(str.slice(i, i + chunkLength));
+  }
+  return result;
+}
+
+async function fetchPublicKey(url) {
+  const __option = {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json;charset=utf-8",
+    },
+    cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "include", // include, *same-origin, omit
+    redirect: "follow", // manual, *follow, error
+    referrerPolicy: "no-referrer-when-downgrade", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+  };
+
+  const response = await fetch(url, __option)
+  const data = await response.json()
+  return data;
 }
