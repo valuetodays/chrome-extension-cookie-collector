@@ -14,22 +14,21 @@ const OptionsPage = {
       return false;
     }
     let urlGetRsaPublicKey = document.getElementById("url-get-rsa-public-key").value;
+    let domainsToExclude = document.getElementById("domains-to-exclude").value;
     
-    saveOptions({ url: urlSendTo, publickeyUrl: urlGetRsaPublicKey });
+    saveOptions({ url: urlSendTo, publickeyUrl: urlGetRsaPublicKey, excludeDomains: domainsToExclude });
   },
 
   async showOptions() {
-    const savedOptions = await chrome.storage.local.get(['url', 'publickeyUrl']);
-    console.log({savedOptions})
+    const savedOptions = await chrome.storage.local.get(['url', 'publickeyUrl', 'excludeDomains']);
 
     document.getElementById('url-send-to').value = savedOptions?.url||''
     document.getElementById('url-get-rsa-public-key').value = savedOptions?.publickeyUrl||''
+    document.getElementById('domains-to-exclude').value = savedOptions?.excludeDomains||''
   },
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // await Settings.onLoaded();
-  // DomUtils.injectUserCss();
   await OptionsPage.init();
 });
 

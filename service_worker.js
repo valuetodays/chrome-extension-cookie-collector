@@ -1,4 +1,5 @@
 importScripts('./jsencrypt_utils.js')
+importScripts('./js/index.umd.js')
 
 
 async function start() {
@@ -51,11 +52,33 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
 });
 
+function shouldExclude(excludeDomains, domain) {
+  if (!excludeDomains) {
+    return false;
+  }
+  const domainArr = excludeDomains.split(';')
+  for (let i = 0; i < domainArr.length; i++) {
+    const v = domainArr[i].trim()
+    const isMatch = wcmatch(v)
+    if (isMatch(domain)) {
+      console.log("exclude ", domain, excludeDomains);
+      return true;
+    }
+  }
+
+  return false;
+}
+
 async function pushCookieToServer(domain, type, referer) {
+  const savedOptions = await chrome.storage.local.get(["url", 'publickeyUrl', 'excludeDomains']);
+  const excludeDomains = savedOptions?.excludeDomains
+  if (shouldExclude(excludeDomains, domain)) {
+    return;
+  }
   const cookies = await chrome.cookies.getAll({ domain });
 
   if (cookies.length === 0) {
-    console.log("No cookies found");
+    return;
   } else {
     let __json = {
       domain: domain,
@@ -63,8 +86,8 @@ async function pushCookieToServer(domain, type, referer) {
       referer: referer,
     };
     const cookieArrText = JSON.stringify(cookies)
-    const savedOptions = await chrome.storage.local.get(["url", 'publickeyUrl']);
-    let __publickeyUrl = savedOptions.publickeyUrl;
+
+    const __publickeyUrl = savedOptions.publickeyUrl;
     if (__publickeyUrl) {
       const respData = await fetchPublicKey(__publickeyUrl)
       const key = respData.data;

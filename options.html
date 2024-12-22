@@ -1,22 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <script src="./options.js"></script>
-    </head>
-    <body>
-        <div>
-          <div class="input-group">
-            <span class="input-group-text">url to save cookie:</span>
-            <input id="url-send-to" type="text" class="form-control">
-          </div>
-          <div class="input-group">
-            <span class="input-group-text">url to query rsa public key:</span>
-            <input id="url-get-rsa-public-key" type="text" class="form-control">
-          </div>
-            <div class="form-text">
-              <a id="saveForm" href="#">save form</a>
-            </div>
-          </div>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <script src="./options.js"></script>
+    <style>
+      body {
+        margin-left: 15px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div class="input-group">
+        <span class="input-group-text">url where push cookie to:</span>
+        <input
+          id="url-send-to"
+          type="text"
+          class="form-control"
+          style="width: 600px"
+        />
+        <span> sample: http://example.com/a/b.do</span>
+      </div>
+      <div class="input-group">
+        <span class="input-group-text">url to query rsa public key:</span>
+        <input
+        id="url-get-rsa-public-key"
+        type="text"
+        class="form-control"
+        style="width: 600px"
+        />
+        <span> sample: http://example.com/a/c.do</span>
+      </div>
+      <div class="input-group">
+        <span class="input-group-text">doamin to exclude:</span>
+        <textarea
+        id="domains-to-exclude"
+        rows="5"
+        class="form-control"
+        style="width: 600px"
+        >
+      </textarea>
+      <span>sample: *.abc.cn;*.google.com;*.github.com</span>
+      </div>
+      <div class="form-text">
+        <a id="saveForm" href="#">save form</a>
+      </div>
+    </div>
+  </body>
 </html>

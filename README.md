@@ -15,7 +15,7 @@ choose directory where manifest.json locates.
 ## usage
 
 - config your server in options page
-  - [ ] add some excludes site
+  - [x] add exclude domains
 - [x] click extension icon or Ctrl+shift+F
 - [x] auto push cookie when url changes
 
