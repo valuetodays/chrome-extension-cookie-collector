@@ -83,6 +83,7 @@ async function pushCookieToServer(domain, type, referer) {
     let __json = {
       domain: domain,
       type: type,
+      title: '',
       referer: referer,
     };
     const cookieArrText = JSON.stringify(cookies)

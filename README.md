@@ -1,25 +1,28 @@
 # chrome-extension-cookie-collector
 
-## description
+## Description
 
 This extension will send your encrypted 'local cookie' to SPECIFIED SERVER that can be used in any other applications.
 
-## install
+## Installation
 
-open chrome.
-type chrome://extensions/ in address bar.
-turn on 'Developer mode'.
-click 'Load Unpacked'.
-choose directory where manifest.json locates.
+- Open chrome.
+- Type `chrome://extensions/` in address bar.
+- Turn on 'Developer mode'.
+- Click 'Load Unpacked'.
+- Choose directory where manifest.json locates.
 
-## usage
+## Usage
 
-- config your server in options page
+- [x] config your server in options page
+  - [x] add target url to receive cookie
   - [x] add exclude domains
+  - [x] show options in json format
+  - [x] save options in json format
 - [x] click extension icon or Ctrl+shift+F
 - [x] auto push cookie when url changes
 
-## remark
+## Remark
 
 ### How does popup.js call method in service_worker.js
 
