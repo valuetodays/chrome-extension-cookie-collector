@@ -36,7 +36,7 @@ chrome.tabs.onRemoved.addListener(function (tabId, removeInfo) {
 
 // https://blog.csdn.net/m0_57236802/article/details/132492035
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (changeInfo.url && !changeInfo.url.startsWith('chrome://')) {
+  if (changeInfo.url && !changeInfo.url.startsWith('chrome://') && !changeInfo.url.startsWith('chrome-extension://')) {
     let domain = new URL(changeInfo.url).hostname;
     pushCookieToServer(domain, "url-changed", changeInfo.url);
   }
